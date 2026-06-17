@@ -27,9 +27,19 @@
           <p class="site-subtitle">Паливо vs Brent · Акциз НБУ · Податкова модель</p>
         </div>
       </div>
-      <div id="corr-badge" class="corr-badge" title="Коефіцієнт кореляції Пірсона між очищеною ціною пального та нафтою Brent">
+      <div id="corr-badge" class="corr-badge" tabindex="0" aria-haspopup="true">
         <span class="corr-icon">📉</span>
         <span id="corr-text">Очікування даних...</span>
+        <div class="tooltip-box" role="tooltip">
+          <h3>Що це означає?</h3>
+          <p><strong>Коефіцієнт кореляції Пірсона (r)</strong> вимірює лінійний зв'язок між ціною пального на АЗС та ціною нафти Brent:</p>
+          <ul>
+            <li><strong>+1.0</strong> — ідеальний зв'язок (ціни АЗС ростуть слідом за нафтою);</li>
+            <li><strong>0.0</strong> — зв'язок повністю відсутній;</li>
+            <li><strong>-1.0</strong> — зворотна залежність.</li>
+          </ul>
+          <p class="tooltip-highlight">Значення <strong>&gt; 0.7</strong> вказує на сильний (високий) взаємозв'язок.</p>
+        </div>
       </div>
     </header>
 

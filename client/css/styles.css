@@ -150,6 +150,7 @@ code { font-family: var(--mono); font-size: 0.8125em; color: var(--accent-2); }
 }
 
 .corr-badge {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -163,10 +164,83 @@ code { font-family: var(--mono); font-size: 0.8125em; color: var(--accent-2); }
   backdrop-filter: blur(10px);
   transition: border-color var(--transition), box-shadow var(--transition);
   white-space: nowrap;
+  cursor: help;
+  outline: none;
+}
+.corr-badge:focus-visible {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
 }
 .corr-badge.live {
   border-color: var(--border-glow);
   box-shadow: var(--accent-glow);
+}
+
+/* ─── Tooltip ────────────────────────────────────────────────── */
+.corr-badge .tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  padding: 16px;
+  background: rgba(22, 27, 34, 0.98);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--r);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), var(--accent-glow);
+  backdrop-filter: blur(16px);
+  color: var(--text-2);
+  font-family: var(--font);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  white-space: normal;
+  text-align: left;
+  z-index: 100;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+.corr-badge .tooltip-box h3 {
+  margin: 0 0 8px 0;
+  color: var(--accent-2);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.corr-badge .tooltip-box p {
+  margin: 0 0 10px 0;
+  color: var(--text);
+}
+.corr-badge .tooltip-box p strong {
+  color: var(--accent-2);
+}
+.corr-badge .tooltip-box ul {
+  margin: 0 0 10px 0;
+  padding-left: 18px;
+  color: var(--text-2);
+}
+.corr-badge .tooltip-box li {
+  margin-bottom: 4px;
+}
+.corr-badge .tooltip-box li strong {
+  color: var(--text);
+}
+.corr-badge .tooltip-box .tooltip-highlight {
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--accent-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  color: var(--text);
+}
+
+.corr-badge:hover .tooltip-box,
+.corr-badge:focus-within .tooltip-box,
+.corr-badge:focus .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* ─── Filters panel ──────────────────────────────────────────── */
