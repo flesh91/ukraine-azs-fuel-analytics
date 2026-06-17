@@ -101,7 +101,17 @@
         </div>
 
         <div class="filter-group">
-          <label class="filter-label" for="lag">Лаг постачання</label>
+          <label class="filter-label" for="lag">
+            Лаг постачання
+            <span class="info-icon has-tooltip tooltip-right" tabindex="0">
+              ⓘ
+              <div class="tooltip-box" role="tooltip">
+                <h3>⏳ Лаг постачання (зсув)</h3>
+                <p>Час у днях від зміни світової ціни нафти до її відображення на стелах українських АЗС (закупівля, транспортування, розмитнення).</p>
+                <p class="tooltip-highlight"><strong>14 днів</strong> — стандартний логістичний період для європейського імпорту готового пального.</p>
+              </div>
+            </span>
+          </label>
           <select id="lag" class="filter-input">
             <option value="0">Без лагу</option>
             <option value="7">7 днів</option>

@@ -304,6 +304,31 @@ code { font-family: var(--mono); font-size: 0.8125em; color: var(--accent-2); }
   text-transform: uppercase;
   color: var(--text-3);
   user-select: none;
+  display: flex;
+  align-items: center;
+}
+
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+  font-size: 0.6875rem;
+  font-weight: normal;
+  color: var(--text-3);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  cursor: help;
+  transition: color var(--transition), background var(--transition);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.info-icon:hover,
+.info-icon.tooltip-open {
+  color: var(--accent-2);
+  background: rgba(251, 191, 36, 0.12);
 }
 
 .filter-input {
