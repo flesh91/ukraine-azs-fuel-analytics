@@ -210,16 +210,6 @@ code { font-family: var(--mono); font-size: 0.8125em; color: var(--accent-2); }
   pointer-events: none;
 }
 
-/* Specific position adjustments to avoid boundary cropping */
-.corr-badge .tooltip-box {
-  left: auto;
-  right: 0;
-  transform: translateY(-8px);
-}
-.anomalies-title .tooltip-box {
-  left: 0;
-  transform: translateY(-8px);
-}
 
 .tooltip-box h3 {
   margin: 0 0 8px 0;
@@ -269,8 +259,22 @@ code { font-family: var(--mono); font-size: 0.8125em; color: var(--accent-2); }
   transform: translateX(-50%) translateY(0);
   pointer-events: auto;
 }
-.corr-badge.tooltip-open .tooltip-box,
-.anomalies-title.tooltip-open .tooltip-box {
+
+/* Specific alignment overrides to avoid boundary cropping */
+.has-tooltip.tooltip-left .tooltip-box {
+  left: 0;
+  transform: translateY(-8px);
+}
+.has-tooltip.tooltip-left.tooltip-open .tooltip-box {
+  transform: translateY(0);
+}
+
+.has-tooltip.tooltip-right .tooltip-box {
+  left: auto;
+  right: 0;
+  transform: translateY(-8px);
+}
+.has-tooltip.tooltip-right.tooltip-open .tooltip-box {
   transform: translateY(0);
 }
 
