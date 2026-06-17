@@ -88,8 +88,8 @@ async function fetchNbuMonth(month, valcode, startIso, endIso) {
  * @param {string} params.endDate    ISO date 'YYYY-MM-DD'
  * @param {string} params.mode       'day' | 'month'
  */
-async function getAnalyticsData({ brand, fuelType, startDate, endDate, mode }) {
-  const memKey = `${brand}|${fuelType}|${startDate}|${endDate}|${mode}`;
+async function getAnalyticsData({ brand, fuelType, startDate, endDate, mode, lag = 0 }) {
+  const memKey = `${brand}|${fuelType}|${startDate}|${endDate}|${mode}|${lag}`;
   const cached = memCache.get(memKey);
   if (cached) return cached;
 
@@ -97,21 +97,24 @@ async function getAnalyticsData({ brand, fuelType, startDate, endDate, mode }) {
   const endObj   = new Date(endDate);
   const months   = getMonthRange(startObj, endObj);
 
-  // Extend NBU start 7 days earlier to seed forward-fill on the first day
+  // Extend NBU start at least lag + 7 days earlier to seed forward-fill and cover lag shift
   const nbuSeedDate    = new Date(startObj);
-  nbuSeedDate.setUTCDate(nbuSeedDate.getUTCDate() - 7);
+  nbuSeedDate.setUTCDate(nbuSeedDate.getUTCDate() - (lag + 7));
   const nbuSeedIso     = nbuSeedDate.toISOString().split('T')[0];
   const nbuSeedMonths  = getMonthRange(nbuSeedDate, endObj);
 
-  // Fetch all months in parallel (respects local cache)
-  let rawFuel = [], rawOil = [];
+  // Fetch fuel for selected months
+  let rawFuel = [];
   await Promise.all(months.map(async month => {
-    const [fuel, oil] = await Promise.all([
-      fetchFuelMonth(brand, month, fuelType),
-      fetchOilMonth(month),
-    ]);
+    const fuel = await fetchFuelMonth(brand, month, fuelType);
     rawFuel = rawFuel.concat(fuel);
-    rawOil  = rawOil.concat(oil);
+  }));
+
+  // Fetch Brent oil for the extended month range (due to lag lookup)
+  let rawOil = [];
+  await Promise.all(nbuSeedMonths.map(async month => {
+    const oil = await fetchOilMonth(month);
+    rawOil = rawOil.concat(oil);
   }));
 
   // NBU rates: fetch from seed date to ensure forward-fill coverage
@@ -125,12 +128,12 @@ async function getAnalyticsData({ brand, fuelType, startDate, endDate, mode }) {
     rawEur = rawEur.concat(eur);
   }));
 
-  // Bug #2 fix: forward-fill NBU rates to cover weekends/public holidays
-  const usdFilled = forwardFill(rawUsd, startObj, endObj);
-  const eurFilled = forwardFill(rawEur, startObj, endObj);
+  // Bug #2 fix: forward-fill NBU rates to cover weekends/public holidays starting from the seed date
+  const usdFilled = forwardFill(rawUsd, nbuSeedDate, endObj);
+  const eurFilled = forwardFill(rawEur, nbuSeedDate, endObj);
 
   // Merge all four datasets (inner join on date)
-  let data = mergeAllDatasets(rawFuel, rawOil, usdFilled, eurFilled);
+  let data = mergeAllDatasets(rawFuel, rawOil, usdFilled, eurFilled, lag);
   data     = data.filter(d => d.date >= startObj && d.date <= endObj);
 
   if (!data.length) {

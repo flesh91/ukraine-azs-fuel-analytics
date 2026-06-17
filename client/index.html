@@ -100,6 +100,16 @@
           </select>
         </div>
 
+        <div class="filter-group">
+          <label class="filter-label" for="lag">Лаг постачання</label>
+          <select id="lag" class="filter-input">
+            <option value="0">Без лагу</option>
+            <option value="7">7 днів</option>
+            <option value="14" selected>14 днів (імпорт)</option>
+            <option value="21">21 день</option>
+          </select>
+        </div>
+
         <div class="filter-group filter-action">
           <button id="load-btn" class="btn-primary" onclick="window.loadData()">
             <span id="btn-text">Розрахувати</span>

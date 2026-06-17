@@ -8,7 +8,7 @@ const cacheRepo            = require('../repositories/cacheRepository');
  */
 async function getAnalytics(req, res, next) {
   try {
-    const { brand, fuelType, startDate, endDate, mode = 'day' } = req.query;
+    const { brand, fuelType, startDate, endDate, mode = 'day', lag } = req.query;
 
     if (!brand || !fuelType || !startDate || !endDate) {
       return res.status(400).json({
@@ -28,7 +28,8 @@ async function getAnalytics(req, res, next) {
       return res.status(400).json({ error: 'mode має бути "day" або "month".' });
     }
 
-    const result = await getAnalyticsData({ brand, fuelType, startDate, endDate, mode });
+    const parsedLag = parseInt(lag, 10) || 0;
+    const result = await getAnalyticsData({ brand, fuelType, startDate, endDate, mode, lag: parsedLag });
     res.json(result);
   } catch (err) {
     next(err);

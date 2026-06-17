@@ -16,6 +16,7 @@
     const start    = document.getElementById('startDate').value;
     const end      = document.getElementById('endDate').value;
     const mode     = document.getElementById('mode').value;
+    const lag      = document.getElementById('lag').value;
     const brandLabel = document.getElementById('brand')
       .options[document.getElementById('brand').selectedIndex].text;
 
@@ -35,7 +36,7 @@
 
     try {
       const [result, cacheInfo] = await Promise.all([
-        AZSApi.fetchAnalytics({ brand, fuelType, startDate: start, endDate: end, mode }),
+        AZSApi.fetchAnalytics({ brand, fuelType, startDate: start, endDate: end, mode, lag }),
         AZSApi.fetchCacheInfo(),
       ]);
 

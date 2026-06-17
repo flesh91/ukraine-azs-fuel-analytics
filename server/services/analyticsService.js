@@ -43,34 +43,37 @@ function getExciseRateEuro(fuelType, date) {
  * Merge fuel, oil, USD, EUR arrays by calendar date.
  * Only rows where all four sources have data are kept.
  */
-function mergeAllDatasets(fuel, oil, usd, eur) {
+function mergeAllDatasets(fuel, oil, usd, eur, lag = 0) {
   const map = new Map();
+  const lagMs = lag * 24 * 60 * 60 * 1000;
+
+  // Index oil, usd, eur by date string for fast shifted lookup
+  const oilMap = new Map(oil.map(o => [o.date.toDateString(), o.val]));
+  const usdMap = new Map(usd.map(u => [u.date.toDateString(), u.val]));
+  const eurMap = new Map(eur.map(e => [e.date.toDateString(), e.val]));
 
   for (const f of fuel) {
-    map.set(f.date.toDateString(), { date: f.date, fuel: f.val });
-  }
-  for (const o of oil) {
-    const key = o.date.toDateString();
-    const entry = map.get(key) || { date: o.date };
-    entry.rawOil = o.val;
-    map.set(key, entry);
-  }
-  for (const u of usd) {
-    const key = u.date.toDateString();
-    const entry = map.get(key) || { date: u.date };
-    entry.usd = u.val;
-    map.set(key, entry);
-  }
-  for (const e of eur) {
-    const key = e.date.toDateString();
-    const entry = map.get(key) || { date: e.date };
-    entry.eur = e.val;
-    map.set(key, entry);
+    const lookupDate = lag > 0
+      ? new Date(f.date.getTime() - lagMs)
+      : f.date;
+    const lookupKey = lookupDate.toDateString();
+
+    const rawOil = oilMap.get(lookupKey);
+    const usdVal = usdMap.get(lookupKey);
+    const eurVal = eurMap.get(lookupKey);
+
+    if (rawOil !== undefined && usdVal !== undefined && eurVal !== undefined) {
+      map.set(f.date.toDateString(), {
+        date:   f.date,
+        fuel:   f.val,
+        rawOil,
+        usd:    usdVal,
+        eur:    eurVal,
+      });
+    }
   }
 
-  return [...map.values()]
-    .filter(x => x.fuel !== undefined && x.rawOil !== undefined && x.usd !== undefined && x.eur !== undefined)
-    .sort((a, b) => a.date - b.date);
+  return [...map.values()].sort((a, b) => a.date - b.date);
 }
 
 // ─── Tax cleaning ─────────────────────────────────────────────────────────────
