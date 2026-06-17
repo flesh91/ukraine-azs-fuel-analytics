@@ -20,6 +20,25 @@
       this.destroy();
 
       const ctx    = document.getElementById('chart').getContext('2d');
+
+      // Enforce a minimum span of 15 UAH for the Y-axis to prevent
+      // extreme line stretching on narrow price ranges (e.g. cheap networks on short periods)
+      const fuelValues = data.map(d => d.fuel).concat(data.map(d => d.fairFuel));
+      const rawMin = Math.min(...fuelValues);
+      const rawMax = Math.max(...fuelValues);
+      const span = rawMax - rawMin;
+      let yMin = rawMin;
+      let yMax = rawMax;
+
+      if (span < 15) {
+        const center = (rawMax + rawMin) / 2;
+        yMin = Math.floor(center - 7.5);
+        yMax = Math.ceil(center + 7.5);
+      } else {
+        const buffer = span * 0.05;
+        yMin = Math.floor(rawMin - buffer);
+        yMax = Math.ceil(rawMax + buffer);
+      }
       const sparse = data.length > 90; // skip point dots for dense datasets
 
       const labels = data.map(d => {
@@ -133,6 +152,8 @@
             y: {
               type:     'linear',
               position: 'left',
+              min:      yMin,
+              max:      yMax,
               grid:     { color: 'rgba(48,54,61,0.45)' },
               ticks:    { color: '#8b949e', font: { size: 11, family: 'Inter' } },
               title:    { display: true, text: 'Роздріб / Справедлива ціна (грн/л)', color: '#6e7681', font: { size: 11 } },
@@ -140,6 +161,7 @@
             y1: {
               type:     'linear',
               position: 'right',
+              grace:    '10%',
               grid:     { drawOnChartArea: false },
               ticks:    { color: '#6e7681', font: { size: 11, family: 'Inter' } },
               title:    { display: true, text: 'Brent ($/бар)  ·  USD (грн)', color: '#6e7681', font: { size: 11 } },
