@@ -27,7 +27,7 @@
           <p class="site-subtitle">Паливо vs Brent · Акциз НБУ · Податкова модель</p>
         </div>
       </div>
-      <div id="corr-badge" class="corr-badge" tabindex="0" aria-haspopup="true">
+      <div id="corr-badge" class="corr-badge has-tooltip" tabindex="0" aria-haspopup="true">
         <span class="corr-icon">📉</span>
         <span id="corr-text">Очікування даних...</span>
         <div class="tooltip-box" role="tooltip">
@@ -113,32 +113,61 @@
     </section>
 
     <!-- ─── Stats bar ─────────────────────────────────────────────── -->
-    <div id="stats-bar" class="stats-bar" hidden aria-label="Статистика">
-      <div class="stat-card">
-        <span class="stat-label">Мін. ціна</span>
-        <span id="stat-min" class="stat-value success">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Макс. ціна</span>
-        <span id="stat-max" class="stat-value danger">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Середня</span>
-        <span id="stat-avg" class="stat-value">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Акциз + ПДВ</span>
-        <span id="stat-tax" class="stat-value accent">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Точок даних</span>
-        <span id="stat-count" class="stat-value muted">—</span>
-      </div>
-      <div class="stat-card" id="cache-card" title="Дані з локального JSON-кешу">
-        <span class="stat-label">Кеш</span>
-        <span id="stat-cache" class="stat-value success">💾 —</span>
-      </div>
-    </div>
+     <div id="stats-bar" class="stats-bar" hidden aria-label="Статистика">
+       <div class="stat-card has-tooltip" tabindex="0">
+         <span class="stat-label">Мін. ціна</span>
+         <span id="stat-min" class="stat-value success">—</span>
+         <div class="tooltip-box" role="tooltip">
+           <h3>📉 Мінімальна ціна</h3>
+           <p>Найнижча зафіксована роздрібна ціна на обране пальне за обраний період часу.</p>
+           <p class="tooltip-highlight">Дані завантажуються автоматично з архіву порталу <strong>Мінфін</strong>.</p>
+         </div>
+       </div>
+       <div class="stat-card has-tooltip" tabindex="0">
+         <span class="stat-label">Макс. ціна</span>
+         <span id="stat-max" class="stat-value danger">—</span>
+         <div class="tooltip-box" role="tooltip">
+           <h3>📈 Максимальна ціна</h3>
+           <p>Найвища зафіксована роздрібна ціна на обране пальне за обраний період часу.</p>
+           <p class="tooltip-highlight">Дані завантажуються автоматично з архіву порталу <strong>Мінфін</strong>.</p>
+         </div>
+       </div>
+       <div class="stat-card has-tooltip" tabindex="0">
+         <span class="stat-label">Середня</span>
+         <span id="stat-avg" class="stat-value">—</span>
+         <div class="tooltip-box" role="tooltip">
+           <h3>📊 Середня ціна</h3>
+           <p>Середнє арифметичне значення вартості обраного пального на заправках за всі дні вказаного періоду.</p>
+         </div>
+       </div>
+       <div class="stat-card has-tooltip" tabindex="0">
+         <span class="stat-label">Акциз + ПДВ</span>
+         <span id="stat-tax" class="stat-value accent">—</span>
+         <div class="tooltip-box" role="tooltip">
+           <h3>💶 Податкова складова</h3>
+           <p>Розраховується за формулою:</p>
+           <p><code>(акциз EUR / 1000) × курс НБУ EUR × 1.2 (ПДВ)</code></p>
+           <p class="tooltip-highlight">Це обов'язкова частина ціни за літр, яка надходить безпосередньо в державний бюджет України.</p>
+         </div>
+       </div>
+       <div class="stat-card has-tooltip" tabindex="0">
+         <span class="stat-label">Точок даних</span>
+         <span id="stat-count" class="stat-value muted">—</span>
+         <div class="tooltip-box" role="tooltip">
+           <h3>🔢 Точки даних</h3>
+           <p>Кількість днів або місяців у вибраному періоді, для яких є повні синхронізовані дані з усіх джерел (роздріб АЗС, нафта Brent, курс USD, курс EUR).</p>
+         </div>
+       </div>
+       <div class="stat-card has-tooltip" id="cache-card" tabindex="0">
+         <span class="stat-label">Кеш</span>
+         <span id="stat-cache" class="stat-value success">💾 —</span>
+         <div class="tooltip-box" role="tooltip">
+           <h3>💾 Локальний кеш</h3>
+           <p>Показує кількість завантажених JSON-файлів із зовнішніх джерел та їхній загальний обсяг на диску.</p>
+           <p class="tooltip-highlight">Кешування запобігає повторним запитам та пришвидшує роботу додатку в десятки разів.</p>
+         </div>
+       </div>
+     </div>
 
     <!-- ─── Main content ──────────────────────────────────────────── -->
     <main class="main-grid" role="main">
@@ -162,7 +191,17 @@
       <!-- Anomalies panel -->
       <aside class="anomalies-panel" aria-label="Виявлені аномалії">
         <div class="anomalies-header">
-          <h2 class="anomalies-title">⚠️ Аномалії</h2>
+          <h2 class="anomalies-title has-tooltip" tabindex="0">
+            ⚠️ Аномалії
+            <div class="tooltip-box" role="tooltip">
+              <h3>🚨 Пошук аномалій</h3>
+              <p>Модель виявляє відхилення цін АЗС від нафти Brent та податків:</p>
+              <ul>
+                <li><strong>Роздріб перевищує модель</strong>: ціна на АЗС вища за розраховану «справедливу ціну» на понад 3% або 0.5 грн/л.</li>
+                <li><strong>Ціна вгору, нафта вниз</strong>: АЗС підвищили ціни, попри те що світова нафта Brent здешевшала.</li>
+              </ul>
+            </div>
+          </h2>
           <span id="anomaly-count" class="anomaly-badge" aria-label="Кількість аномалій"></span>
         </div>
         <div id="alerts" class="alerts-list" role="log">

@@ -60,8 +60,38 @@
     }
   };
 
-  /* ─── Enter key shortcut ────────────────────────────────────── */
+  /* ─── Tooltip Click Toggle Logic ────────────────────────────── */
+  document.addEventListener('click', e => {
+    const target = e.target.closest('.has-tooltip');
+    
+    if (e.target.closest('.tooltip-box')) {
+      return;
+    }
+
+    // Close all other tooltips
+    document.querySelectorAll('.has-tooltip.tooltip-open').forEach(el => {
+      if (el !== target) {
+        el.classList.remove('tooltip-open');
+      }
+    });
+
+    if (target) {
+      // If correlation badge, only open if it has class .live (i.e. data is loaded)
+      if (target.id === 'corr-badge' && !target.classList.contains('live')) {
+        return;
+      }
+      target.classList.toggle('tooltip-open');
+      e.stopPropagation();
+    }
+  });
+
+  /* ─── Keydown shortcuts (Enter & Escape) ────────────────────── */
   document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.has-tooltip.tooltip-open').forEach(el => {
+        el.classList.remove('tooltip-open');
+      });
+    }
     if (e.key === 'Enter' && !document.getElementById('load-btn').disabled) {
       window.loadData();
     }
