@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Аналітичний дашборд цін на паливо АЗС vs нафта Brent із розрахунком акцизів та курсом НБУ" />
+  <title>AZS Analytics — Паливо vs Нафта Brent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Ambient background glows -->
+  <div class="bg-glow-1" aria-hidden="true"></div>
+  <div class="bg-glow-2" aria-hidden="true"></div>
+
+  <div class="app-shell">
+
+    <!-- ─── Header ──────────────────────────────────────────────── -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="header-icon" aria-hidden="true">⛽</div>
+        <div class="header-titles">
+          <h1 class="site-title">AZS Analytics</h1>
+          <p class="site-subtitle">Паливо vs Brent · Акциз НБУ · Податкова модель</p>
+        </div>
+      </div>
+      <div id="corr-badge" class="corr-badge" title="Коефіцієнт кореляції Пірсона між очищеною ціною пального та нафтою Brent">
+        <span class="corr-icon">📉</span>
+        <span id="corr-text">Очікування даних...</span>
+      </div>
+    </header>
+
+    <!-- ─── Filters ──────────────────────────────────────────────── -->
+    <section class="filters-panel" aria-label="Параметри запиту">
+      <div class="filters-grid">
+
+        <div class="filter-group">
+          <label class="filter-label" for="startDate">Початок</label>
+          <input type="date" id="startDate" class="filter-input" />
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="endDate">Кінець</label>
+          <input type="date" id="endDate" class="filter-input" />
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="brand">Мережа АЗС</label>
+          <select id="brand" class="filter-input">
+            <option value="okko">ОККО</option>
+            <option value="wog">WOG</option>
+            <option value="socar">SOCAR</option>
+            <option value="ukrnafta">UKRNAFTA</option>
+            <option value="upg">UPG</option>
+            <option value="klo">KLO</option>
+            <option value="brsmnafta">БРСМ-Нафта</option>
+            <option value="amic">AMIC</option>
+            <option value="bvs">BVS</option>
+            <option value="chipo">Chipo</option>
+            <option value="grand_petrol">Grand Petrol</option>
+            <option value="neftek">Neftek</option>
+            <option value="parallel">Parallel</option>
+            <option value="sun_oil">SUN OIL</option>
+            <option value="ugo">U.GO</option>
+            <option value="avantazh_7">Авантаж 7</option>
+            <option value="avtotrans">Автотранс</option>
+            <option value="rur_grup">Рур груп</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="fuelType">Тип пального</label>
+          <select id="fuelType" class="filter-input">
+            <option value="A-95+">А-95+</option>
+            <option value="A-95">А-95</option>
+            <option value="A-92">А-92</option>
+            <option value="ДП">ДП (Дизель)</option>
+            <option value="Газ">Газ</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label" for="mode">Деталізація</label>
+          <select id="mode" class="filter-input">
+            <option value="day">По днях</option>
+            <option value="month">По місяцях</option>
+          </select>
+        </div>
+
+        <div class="filter-group filter-action">
+          <button id="load-btn" class="btn-primary" onclick="window.loadData()">
+            <span id="btn-text">Розрахувати</span>
+            <svg id="btn-spinner" class="btn-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" hidden aria-hidden="true">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="42 14"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── Stats bar ─────────────────────────────────────────────── -->
+    <div id="stats-bar" class="stats-bar" hidden aria-label="Статистика">
+      <div class="stat-card">
+        <span class="stat-label">Мін. ціна</span>
+        <span id="stat-min" class="stat-value success">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Макс. ціна</span>
+        <span id="stat-max" class="stat-value danger">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Середня</span>
+        <span id="stat-avg" class="stat-value">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Акциз + ПДВ</span>
+        <span id="stat-tax" class="stat-value accent">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Точок даних</span>
+        <span id="stat-count" class="stat-value muted">—</span>
+      </div>
+      <div class="stat-card" id="cache-card" title="Дані з локального JSON-кешу">
+        <span class="stat-label">Кеш</span>
+        <span id="stat-cache" class="stat-value success">💾 —</span>
+      </div>
+    </div>
+
+    <!-- ─── Main content ──────────────────────────────────────────── -->
+    <main class="main-grid" role="main">
+
+      <!-- Chart panel -->
+      <div class="chart-panel">
+        <div id="chart-placeholder" class="chart-placeholder">
+          <div class="placeholder-orb" aria-hidden="true">📊</div>
+          <p class="placeholder-text">Оберіть параметри та натисніть «Розрахувати»</p>
+          <p class="placeholder-hint">Перший запит звертається до minfin.com.ua і bank.gov.ua, наступні — з локального кешу</p>
+        </div>
+        <div id="chart-wrapper" class="chart-wrapper" hidden>
+          <canvas id="chart" aria-label="Графік цін пального та нафти Brent"></canvas>
+        </div>
+        <div id="loading-overlay" class="loading-overlay" hidden aria-live="polite">
+          <div class="loading-ring"></div>
+          <span class="loading-text">Завантаження даних...</span>
+        </div>
+      </div>
+
+      <!-- Anomalies panel -->
+      <aside class="anomalies-panel" aria-label="Виявлені аномалії">
+        <div class="anomalies-header">
+          <h2 class="anomalies-title">⚠️ Аномалії</h2>
+          <span id="anomaly-count" class="anomaly-badge" aria-label="Кількість аномалій"></span>
+        </div>
+        <div id="alerts" class="alerts-list" role="log">
+          <p class="alerts-empty">Виконайте розрахунок для виявлення аномалій.</p>
+        </div>
+        <div class="anomalies-footer">
+          <p>
+            💡 Модель: <code>(акциз EUR/1000) × курс НБУ EUR × 1.2 (ПДВ)</code>.
+            Відхилення &gt; 3% або 0.5 грн/л від <strong>справедливої ціни</strong> позначаються як аномалія.
+          </p>
+        </div>
+      </aside>
+
+    </main>
+
+    <footer class="app-footer">
+      <div class="footer-attribution">
+        <div class="footer-source">
+          <span class="footer-source-label">Ціни на паливо та нафта Brent:</span>
+          <a href="https://www.minfin.com.ua" target="_blank" rel="noopener noreferrer">www.minfin.com.ua</a>
+        </div>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <div class="footer-source">
+          <span class="footer-source-label">Офіційний курс валют (USD/EUR):</span>
+          <a href="https://bank.gov.ua/ua/markets/exchangerates" target="_blank" rel="noopener noreferrer">bank.gov.ua</a>
+          <span class="footer-copy">— © Національний банк України</span>
+        </div>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <span class="footer-cache">Минулі місяці кешуються в <code>./data/</code></span>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <a href="/api/cache-info" target="_blank" rel="noopener" class="footer-cache-link">💾 cache-info</a>
+      </div>
+    </footer>
+
+  </div><!-- /app-shell -->
+
+  <script src="/js/api.js"></script>
+  <script src="/js/chart.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>
