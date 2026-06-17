@@ -280,6 +280,8 @@ code { font-family: var(--mono); font-size: 0.8125em; color: var(--accent-2); }
 
 /* ─── Filters panel ──────────────────────────────────────────── */
 .filters-panel {
+  position: relative;
+  z-index: 45;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
