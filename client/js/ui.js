@@ -17,9 +17,9 @@
       const spinner = document.getElementById('btn-spinner');
       const overlay = document.getElementById('loading-overlay');
 
-      btn.disabled   = on;
-      btnText.hidden = on;
-      spinner.hidden = !on;
+      btn.disabled        = on;
+      btnText.textContent = on ? 'Рахуємо...' : 'Розрахувати';
+      spinner.hidden      = !on;
 
       // Always explicitly set overlay visibility to avoid race conditions
       // when cache returns data faster than React-style re-renders
