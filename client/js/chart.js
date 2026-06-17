@@ -54,7 +54,7 @@
           labels,
           datasets: [
             {
-              label:           `${brand} · ${fuelType} (грн/л)`,
+              label:           `  ${brand} · ${fuelType} (грн/л)`,
               data:            data.map(d => +d.fuel.toFixed(3)),
               borderColor:     '#f59e0b',
               backgroundColor: 'rgba(245,158,11,0.07)',
@@ -66,7 +66,7 @@
               yAxisID:         'y',
             },
             {
-              label:       'Справедлива ціна (грн/л)',
+              label:       '  Справедлива ціна (грн/л)',
               data:        data.map(d => +d.fairFuel.toFixed(3)),
               borderColor: '#10b981',
               borderWidth: 2,
@@ -77,7 +77,7 @@
               yAxisID:     'y',
             },
             {
-              label:       'Brent ($/бар)',
+              label:       '  Brent ($/бар)',
               data:        data.map(d => +d.rawOil.toFixed(2)),
               borderColor: '#3b82f6',
               borderWidth: 1.8,
@@ -87,7 +87,7 @@
               yAxisID:     'y1',
             },
             {
-              label:       'Курс USD НБУ (грн)',
+              label:       '  Курс USD НБУ (грн)',
               data:        data.map(d => +d.usd.toFixed(2)),
               borderColor: '#a855f7',
               borderWidth: 1.4,
@@ -108,7 +108,7 @@
               labels: {
                 color:    '#8b949e',
                 font:     { size: 12, family: 'Inter, sans-serif' },
-                boxWidth: 10,
+                boxWidth: 12,
                 padding:  16,
                 usePointStyle: true,
               },
