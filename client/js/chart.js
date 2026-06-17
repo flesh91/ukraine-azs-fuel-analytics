@@ -108,10 +108,9 @@
               labels: {
                 color:    '#8b949e',
                 font:     { size: 12, family: 'Inter, sans-serif' },
-                boxWidth: 22,
+                boxWidth: 10,
                 padding:  16,
                 usePointStyle: true,
-                pointStyleWidth: 22,
               },
             },
             tooltip: {
