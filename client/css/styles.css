@@ -297,6 +297,11 @@ code { font-family: var(--mono); font-size: 0.8125em; color: var(--accent-2); }
 
 .filter-group { display: flex; flex-direction: column; gap: 7px; }
 
+.filter-label-wrapper {
+  display: flex;
+  align-items: center;
+}
+
 .filter-label {
   font-size: 0.6875rem;
   font-weight: 600;
@@ -304,8 +309,6 @@ code { font-family: var(--mono); font-size: 0.8125em; color: var(--accent-2); }
   text-transform: uppercase;
   color: var(--text-3);
   user-select: none;
-  display: flex;
-  align-items: center;
 }
 
 .info-icon {
